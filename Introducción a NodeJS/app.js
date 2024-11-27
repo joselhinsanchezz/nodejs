@@ -22,7 +22,12 @@ app.get("/people/:index", (req, res) => {
     (importante no confundir con la "query", que serían los parámetros que se colocan 
     luego del signo "?" en la URL)
    */
-  res.json(people[req.params.index]); // Enviamos el elemento solicitado por su índice
+  const index = parseInt(req.params.index);
+  if (index >= 0 && index < people.length) {
+    res.json(people[index]); // Enviamos el elemento solicitado por su índice
+  } else {
+    res.status(404).json({ error: "Índice no válido" });
+  }
 });
 
 app.post("/people", (req, res) => {
@@ -31,19 +36,33 @@ app.post("/people", (req, res) => {
 
   people.push(req.body); // Añadimos un nuevo elemento al array
 
-  res.json(req.body); // Le respondemos al cliente el objeto añadido
+  res.status(201).json(req.body); // Le respondemos al cliente el objeto añadido
 });
 
 app.put("/people/:index", (req, res) => {
-  /* COMPLETA EL CÓDIGO NECESARIO:
-     Para que se pueda actualizar el objeto asociado al índice indicado en la URL 
-   */
+  /* La ruta PUT permite actualizar un elemento en el array */
+
+  const index = parseInt(req.params.index);
+
+  if (index >= 0 && index < people.length) {
+    people[index] = { ...people[index], ...req.body }; // Actualizamos el objeto con los nuevos datos
+    res.json(people[index]); // Respondemos con el objeto actualizado
+  } else {
+    res.status(404).json({ error: "Índice no válido" });
+  }
 });
 
 app.delete("/people/:index", (req, res) => {
-  /* COMPLETA EL CÓDIGO NECESARIO:
-     Para que se pueda eliminar el objeto asociado al índice indicado en la URL 
-   */
+  /* La ruta DELETE permite eliminar un elemento del array */
+
+  const index = parseInt(req.params.index);
+
+  if (index >= 0 && index < people.length) {
+    const deletedPerson = people.splice(index, 1); // Eliminamos el elemento del array
+    res.json(deletedPerson[0]); // Respondemos con el objeto eliminado
+  } else {
+    res.status(404).json({ error: "Índice no válido" });
+  }
 });
 
 // Esta línea inicia el servidor para que escuche peticiones en el puerto indicado
